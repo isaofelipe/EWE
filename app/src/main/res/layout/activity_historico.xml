@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.isaofelipemorigaki.ewe.HistoricoActivity"
+    android:padding="5dp">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="*">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:layout_column="1"
+                android:text="Beacon: #45621"
+                android:padding="3dp"/>
+            <TextView
+                android:layout_column="2"
+                android:text="Tipo: A"/>
+            <TextView
+                android:layout_column="3"
+                android:text="Grau Risco: alto"/>
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/branco"
+                app:srcCompat="@drawable/ic_location_on_black_18dp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:layout_column="1"
+                android:text="Beacon: #45621"
+                android:padding="3dp"/>
+            <TextView
+                android:layout_column="2"
+                android:text="Tipo: A"/>
+            <TextView
+                android:layout_column="3"
+                android:text="Grau Risco: alto"/>
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/branco"
+                app:srcCompat="@drawable/ic_location_on_black_18dp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:layout_column="1"
+                android:text="Beacon: #45621"
+                android:padding="3dp"/>
+            <TextView
+                android:layout_column="2"
+                android:text="Tipo: A"/>
+            <TextView
+                android:layout_column="3"
+                android:text="Grau Risco: alto"/>
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/branco"
+                app:srcCompat="@drawable/ic_location_on_black_18dp" />
+        </TableRow>
+    </TableLayout>
+</LinearLayout>
