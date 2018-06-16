@@ -21,11 +21,13 @@ import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
-public class RangingActivity extends AppCompatActivity implements BeaconConsumer, RangeNotifier {
+public class RangingActivity extends AppCompatActivity implements BeaconConsumer, RangeNotifier, TextToSpeech.OnInitListener {
     protected static final String TAG = "RangingActivity";
     private BeaconManager mBeaconManager;
-    private TextToSpeech textToSpeech;
+    private TextToSpeech tts;
+    static public final Locale BRAZIL = new Locale("pt_BR_", "pt", "BR");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
                 setBeaconLayout(BeaconParser.EDDYSTONE_UID_LAYOUT));
         mBeaconManager.bind(this);
 
-        //textToSpeech = new TextToSpeech(this, );
+        tts = new TextToSpeech(this, this);
     }
 
     @Override
@@ -79,12 +81,50 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         mBeaconManager.addRangeNotifier(this);
     }
 
+    
     @Override
     public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
         if (beacons.size() > 0) {
-            double distancia = beacons.iterator().next().getDistance();
-            Toast toast = Toast.makeText(RangingActivity.this, "Beacon captado a " + distancia + "metros.", Toast.LENGTH_SHORT);
-            toast.show();
+            Beacon beacon = beacons.iterator().next();
+            double distancia = beacon.getDistance();
+            Identifier namespace = beacon.getId1();
+            Identifier instance = beacon.getId2();
+
+            String text = "Beacon captado a " + distancia + "metros.";
+            speakOut(text);
         }
+    }
+
+    @Override
+    public void onInit(int status) {
+
+        if (status == TextToSpeech.SUCCESS) {
+
+            int result = tts.setLanguage(BRAZIL);
+
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "This Language is not supported");
+            } else {
+                speakOut("Inicio");
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed!");
+        }
+
+    }
+    private void speakOut(String text) {
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    @Override
+    public void onDestroy() {
+        // Don't forget to shutdown tts!
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
     }
 }
