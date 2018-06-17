@@ -1,6 +1,7 @@
 package com.example.isaofelipemorigaki.ewe;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
@@ -13,9 +14,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageButton;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class ColaboradorActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private TextView viewNome;
+    private TextView viewLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,13 @@ public class ColaboradorActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //TODO arrumar informacoes logado
+        /*SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
+        viewNome = findViewById(R.id.viewNome);
+        viewNome.setText(sp.getString("nome", "Android"));
+        viewLogin = findViewById(R.id.viewLogin);
+        viewLogin.setText(sp.getString("login", "email@email.com"));*/
     }
 
     @Override

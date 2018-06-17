@@ -40,7 +40,7 @@
 
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/mensagemView"
         android:layout_width="match_parent"
         android:layout_height="73dp"
         android:ems="10"

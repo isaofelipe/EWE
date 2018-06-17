@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
 import com.example.isaofelipemorigaki.ewe.GD.Beacons;
@@ -13,7 +13,6 @@ import com.example.isaofelipemorigaki.ewe.GD.Beacons;
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
@@ -24,14 +23,17 @@ import java.util.Collection;
 public class ContribuirActivity extends AppCompatActivity implements BeaconConsumer, RangeNotifier {
     private BeaconManager mBeaconManager;
     private String ultimoBeacon;
-    private AutoCompleteTextView campoBeacon;
+    private AutoCompleteTextView identificacaoDispositivoView;
+    private EditText mensagemView;
+    private Button botao_contribuir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contribuir);
-
-        Button botao_contribuir = findViewById(R.id.btnContribuir);
+        identificacaoDispositivoView = findViewById(R.id.identificacaoDispositivo);
+        mensagemView = findViewById(R.id.mensagemView);
+        botao_contribuir = findViewById(R.id.btnContribuir);
 
     }
 
@@ -60,10 +62,14 @@ public class ContribuirActivity extends AppCompatActivity implements BeaconConsu
             Beacon beacon = beacons.iterator().next();
             Identifier instance = beacon.getId2();
             double distancia = beacon.getDistance();
-            campoBeacon = findViewById(R.id.identificacaoDispositivo);
-            if (!instance.toString().equals(ultimoBeacon) && distancia <= 6){
+
+            if (!instance.toString().equals(ultimoBeacon) && distancia <= ((Config)this.getApplication()).getMinRange()){
                 Beacons beaconDetectado = AppDataBase.getDatabase(this).beaconDAO().findByInstance(instance.toString());
-                campoBeacon.setText(beaconDetectado.getId());
+                if (beaconDetectado != null){
+                    ultimoBeacon = beaconDetectado.getInstance();
+                    identificacaoDispositivoView.setText(beaconDetectado.getId());
+                    mensagemView.setText(beaconDetectado.getMensagemTemporaria());
+                }
             }
         }
     }

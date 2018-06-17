@@ -1,13 +1,13 @@
 package com.example.isaofelipemorigaki.ewe;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -15,9 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
 import com.example.isaofelipemorigaki.ewe.GD.Beacons;
@@ -40,9 +37,16 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     private TextToSpeech tts;
     static public final Locale BRAZIL = new Locale("pt_BR_", "pt", "BR");
     private String ultimoBeacon;
+    public static Handler h;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
+        if (sp.getBoolean("logado", false)){
+            startActivity(new Intent(RangingActivity.this, ColaboradorActivity.class));
+            finish();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ranging);
 
@@ -53,6 +57,17 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         checkLocationPermission();
 
         tts = new TextToSpeech(this, this);
+
+        h = new Handler() {
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch(msg.what) {
+                    case 0:
+                        finish();
+                        break;
+                }
+            }
+        };
     }
 
     @Override
@@ -101,7 +116,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
             Beacon beacon = beacons.iterator().next();
             Identifier instance = beacon.getId2();
             double distancia = beacon.getDistance();
-            if (!instance.toString().equals(ultimoBeacon) && distancia <= 3){
+            if (!instance.toString().equals(ultimoBeacon) && distancia <= ((Config)this.getApplication()).getMinRange()){
                 Beacons beaconDetectado = AppDataBase.getDatabase(this).beaconDAO().findByInstance(instance.toString());
                 if (beaconDetectado != null){
                     ultimoBeacon = beaconDetectado.getInstance();

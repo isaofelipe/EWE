@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -302,6 +303,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mlogin;
         private final String mSenha;
+        private String mnome;
 
         UserLoginTask(String login, String senha) {
             mlogin = login;
@@ -312,6 +314,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             Colaboradores colaborador = AppDataBase.getDatabase(getApplicationContext()).colaboradorDAO().findByInstance(mlogin);
             if (colaborador != null){
+                mnome = colaborador.getNome();
                 return colaborador.getSenha().equals(mSenha);
             }
             return false;
@@ -324,6 +327,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success) {
                 startActivity(new Intent(LoginActivity.this, ColaboradorActivity.class));
+                SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
+                sp.edit().putBoolean("logado", true).apply();
+                sp.edit().putString("login", mlogin).apply();
+                sp.edit().putString("nome", mnome).apply();
+                RangingActivity.h.sendEmptyMessage(0);
                 finish();
             } else {
                 SenhaView.setError(getString(R.string.error_incorrect_password));
