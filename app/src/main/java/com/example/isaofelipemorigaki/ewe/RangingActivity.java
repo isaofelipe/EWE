@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toolbar;
 
 import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
 import com.example.isaofelipemorigaki.ewe.GD.Beacons;
@@ -49,6 +50,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ranging);
+
 
         mBeaconManager = BeaconManager.getInstanceForApplication(this);
         mBeaconManager.getBeaconParsers().add(new BeaconParser().
@@ -121,7 +123,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "This Language is not supported");
             } else {
-                //speakOut("Inicio");
+                speakOut("Bem vindo ao Ê dablui Ê, seu dispositivo está em modo navegação");
             }
 
         } else {
