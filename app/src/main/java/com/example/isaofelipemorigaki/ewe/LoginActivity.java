@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
@@ -88,6 +89,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button cadastrar = (Button) findViewById(R.id.cadastro);
+        cadastrar.setOnClickListener(new ImageButton.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this, CadastroActivity.class);
+                startActivity(i);
+            }
+        });
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {

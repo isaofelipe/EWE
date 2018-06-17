@@ -77,14 +77,8 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     }
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.cadastro_nav:
-                startActivity(new Intent(RangingActivity.this, CadastroActivity.class));
-                break;
             case R.id.login_nav:
                 startActivity(new Intent(RangingActivity.this, LoginActivity.class));
-                break;
-            case R.id.colaborador_nav:
-                startActivity(new Intent(RangingActivity.this, ColaboradorActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
