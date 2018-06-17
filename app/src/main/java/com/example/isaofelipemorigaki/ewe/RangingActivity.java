@@ -1,16 +1,22 @@
 package com.example.isaofelipemorigaki.ewe;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
@@ -44,6 +50,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         mBeaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout(BeaconParser.EDDYSTONE_UID_LAYOUT));
         mBeaconManager.bind(this);
+        checkLocationPermission();
 
         tts = new TextToSpeech(this, this);
     }
@@ -94,7 +101,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
             Beacon beacon = beacons.iterator().next();
             Identifier instance = beacon.getId2();
             double distancia = beacon.getDistance();
-            if (!instance.toString().equals(ultimoBeacon) && distancia <= 10){
+            if (!instance.toString().equals(ultimoBeacon) && distancia <= 3){
                 Beacons beaconDetectado = AppDataBase.getDatabase(this).beaconDAO().findByInstance(instance.toString());
                 if (beaconDetectado != null){
                     ultimoBeacon = beaconDetectado.getInstance();
@@ -116,7 +123,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "This Language is not supported");
             } else {
-                speakOut("Inicio");
+                //speakOut("Inicio");
             }
 
         } else {
@@ -135,5 +142,20 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
             tts.shutdown();
         }
         super.onDestroy();
+    }
+
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
+            return false;
+        } else {
+            return true;
+        }
     }
 }

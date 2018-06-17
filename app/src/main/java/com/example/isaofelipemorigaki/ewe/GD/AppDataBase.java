@@ -8,9 +8,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-@Database(entities = {Beacons.class}, version = 1)
+@Database(entities = {Beacons.class, Colaboradores.class}, version = 1)
 public abstract class AppDataBase extends RoomDatabase {
     public abstract BeaconDAO beaconDAO();
+    public abstract ColaboradorDAO colaboradorDAO();
 
     private static AppDataBase INSTANCE;
 
@@ -40,10 +41,12 @@ public abstract class AppDataBase extends RoomDatabase {
 
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
 
-        private final BeaconDAO mDao;
+        private final BeaconDAO beaconDao;
+        private final ColaboradorDAO colaboradorDAO;
 
         PopulateDbAsync(AppDataBase db) {
-            mDao = db.beaconDAO();
+            beaconDao = db.beaconDAO();
+            colaboradorDAO = db.colaboradorDAO();
         }
 
         @Override
@@ -51,7 +54,9 @@ public abstract class AppDataBase extends RoomDatabase {
             Beacons beacon = new Beacons("0x000005000bc1", "entrada do prédio azul", "Você está entrando no prédio azul", "Cuidado, o chão está molhado");
             Beacons beacon2 = new Beacons("0x000000000001", "Corredor prédio azul", "Vire à esquerda para acesso a escada e a direita para laboratórios e rampas para outros pavimentos",
                     "Escada em manutenção");
-            mDao.insertAll(beacon, beacon2);
+            Colaboradores colaborador1 = new Colaboradores("Edislaine", "edi@linda.com", "123123");
+            beaconDao.insertAll(beacon, beacon2);
+            colaboradorDAO.insertAll(colaborador1);
             return null;
         }
     }
