@@ -29,9 +29,6 @@
             android:name=".CadastroActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".ValidarActivity"
-            android:label="@string/app_name" />
-        <activity
             android:name=".HistoricoActivity"
             android:label="@string/app_name" />
         <activity
