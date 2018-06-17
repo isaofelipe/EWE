@@ -123,7 +123,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "This Language is not supported");
             } else {
-                speakOut("Bem vindo ao Ê dablui Ê, seu dispositivo está em modo navegação");
+                //speakOut("Modo navegação");
             }
 
         } else {
@@ -135,6 +135,12 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        speakOut("Modo navegação.");
+        getDelegate().onStart();
+    }
+    @Override
     public void onDestroy() {
         // Don't forget to shutdown tts!
         if (tts != null) {
@@ -143,6 +149,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         }
         super.onDestroy();
     }
+
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean checkLocationPermission() {
