@@ -36,11 +36,39 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mensagem" />
+        android:text="Local" />
+
+
+    <AutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:hint="local dispositivo"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="16dp"
+        android:id="@+id/localDispositivo"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mensagem fixa" />
+
+    <EditText
+        android:id="@+id/mensagemFixaView"
+        android:layout_width="match_parent"
+        android:layout_height="73dp"
+        android:ems="10"
+        android:hint="mensagem"
+        android:inputType="textMultiLine" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mensagem temporária" />
 
 
     <EditText
-        android:id="@+id/mensagemView"
+        android:id="@+id/mensagemTemporariaView"
         android:layout_width="match_parent"
         android:layout_height="73dp"
         android:ems="10"

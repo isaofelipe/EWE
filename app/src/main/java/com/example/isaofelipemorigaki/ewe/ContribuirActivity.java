@@ -13,6 +13,7 @@ import com.example.isaofelipemorigaki.ewe.GD.Beacons;
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
@@ -20,11 +21,11 @@ import org.altbeacon.beacon.Region;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ContribuirActivity extends AppCompatActivity implements BeaconConsumer, RangeNotifier {
-    private BeaconManager mBeaconManager;
-    private String ultimoBeacon;
+public class ContribuirActivity extends AppCompatActivity {
     private AutoCompleteTextView identificacaoDispositivoView;
-    private EditText mensagemView;
+    private AutoCompleteTextView localDispositivoView;
+    private EditText mensagemFixaView;
+    private EditText mensagemTemporariaView;
     private Button botao_contribuir;
 
     @Override
@@ -32,45 +33,19 @@ public class ContribuirActivity extends AppCompatActivity implements BeaconConsu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contribuir);
         identificacaoDispositivoView = findViewById(R.id.identificacaoDispositivo);
-        mensagemView = findViewById(R.id.mensagemView);
+        localDispositivoView = findViewById(R.id.localDispositivo);
+        mensagemFixaView = findViewById(R.id.mensagemFixaView);
+        mensagemTemporariaView = findViewById(R.id.mensagemTemporariaView);
+
+        identificacaoDispositivoView.setText(getIntent().getStringExtra("idDispositivo"));
+        localDispositivoView.setText(getIntent().getStringExtra("localDispositivo"));
+        mensagemFixaView.setText(getIntent().getStringExtra("mensagemFixa"));
+        mensagemTemporariaView.setText(getIntent().getStringExtra("mensagemTemporaria"));
+
         botao_contribuir = findViewById(R.id.btnContribuir);
 
+
     }
 
-    @Override
-    public void onBeaconServiceConnect() {
-        // Encapsulates a beacon identifier of arbitrary byte length
-        ArrayList<Identifier> identifiers = new ArrayList<>();
 
-        // Set null to indicate that we want to match beacons with any value
-        identifiers.add(null);
-        // Represents a criteria of fields used to match beacon
-        Region region = new Region("AllBeaconsRegion", identifiers);
-        try {
-            // Tells the BeaconService to start looking for beacons that match the passed Region object
-            mBeaconManager.startRangingBeaconsInRegion(region);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        // Specifies a class that should be called each time the BeaconService gets ranging data, once per second by default
-        mBeaconManager.addRangeNotifier(this);
-    }
-
-    @Override
-    public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-        if (beacons.size() > 0) {
-            Beacon beacon = beacons.iterator().next();
-            Identifier instance = beacon.getId2();
-            double distancia = beacon.getDistance();
-
-            if (!instance.toString().equals(ultimoBeacon) && distancia <= ((Config)this.getApplication()).getMinRange()){
-                Beacons beaconDetectado = AppDataBase.getDatabase(this).beaconDAO().findByInstance(instance.toString());
-                if (beaconDetectado != null){
-                    ultimoBeacon = beaconDetectado.getInstance();
-                    identificacaoDispositivoView.setText(beaconDetectado.getId());
-                    mensagemView.setText(beaconDetectado.getMensagemTemporaria());
-                }
-            }
-        }
-    }
 }

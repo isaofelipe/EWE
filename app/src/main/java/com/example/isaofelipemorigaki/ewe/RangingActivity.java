@@ -57,17 +57,6 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         checkLocationPermission();
 
         tts = new TextToSpeech(this, this);
-
-        h = new Handler() {
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                switch(msg.what) {
-                    case 0:
-                        finish();
-                        break;
-                }
-            }
-        };
     }
 
     @Override
@@ -166,5 +155,11 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         } else {
             return true;
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mBeaconManager.unbind(this);
     }
 }
