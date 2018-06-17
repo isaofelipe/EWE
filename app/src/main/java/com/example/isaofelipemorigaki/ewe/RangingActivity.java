@@ -2,14 +2,19 @@ package com.example.isaofelipemorigaki.ewe;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
+import com.example.isaofelipemorigaki.ewe.GD.Beacons;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -28,6 +33,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     private BeaconManager mBeaconManager;
     private TextToSpeech tts;
     static public final Locale BRAZIL = new Locale("pt_BR_", "pt", "BR");
+    private String ultimoBeacon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,12 +92,16 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
         if (beacons.size() > 0) {
             Beacon beacon = beacons.iterator().next();
-            double distancia = beacon.getDistance();
-            Identifier namespace = beacon.getId1();
             Identifier instance = beacon.getId2();
-
-            String text = "Beacon captado a " + distancia + "metros.";
-            speakOut(text);
+            double distancia = beacon.getDistance();
+            if (!instance.toString().equals(ultimoBeacon) && distancia <= 10){
+                Beacons beaconDetectado = AppDataBase.getDatabase(this).beaconDAO().findByInstance(instance.toString());
+                if (beaconDetectado != null){
+                    ultimoBeacon = beaconDetectado.getInstance();
+                    String texto = beaconDetectado.getMensagemFixa() + " " + beaconDetectado.getMensagemTemporaria();
+                    speakOut(texto);
+                }
+            }
         }
     }
 
@@ -112,7 +122,6 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         } else {
             Log.e("TTS", "Initilization Failed!");
         }
-
     }
     private void speakOut(String text) {
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);

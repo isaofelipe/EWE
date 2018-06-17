@@ -9,18 +9,18 @@ import java.util.List;
 
 @Dao
 public interface BeaconDAO {
-    @Query("SELECT * FROM beacon")
-    List<Beacon> getAll();
+    @Query("SELECT * FROM beacons")
+    List<Beacons> getAll();
 
-    @Query("SELECT * FROM beacon WHERE id IN (:beaconIds)")
-    List<Beacon> loadAllByIds(int[] beaconIds);
+    @Query("SELECT * FROM beacons WHERE id IN (:beaconIds)")
+    List<Beacons> loadAllByIds(int[] beaconIds);
 
-    @Query("SELECT * FROM beacon WHERE instance LIKE :instance LIMIT 1")
-    Beacon findByInstance(String instance);
+    @Query("SELECT * FROM beacons WHERE instance LIKE :instance LIMIT 1")
+    Beacons findByInstance(String instance);
 
     @Insert
-    void insertAll(Beacon... users);
+    void insertAll(Beacons... users);
 
     @Delete
-    void delete(Beacon user);
+    void delete(Beacons user);
 }
