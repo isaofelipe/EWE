@@ -15,41 +15,67 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:height="30dp"
+            android:height="24dp"
             android:autoSizeTextType="uniform"
             android:gravity="center"
             android:text="Cadastro Colaborador"
             android:textColor="@color/preto" />
 
-        <AutoCompleteTextView
-            android:id="@+id/nome"
+        <TextView
+            android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nome"
+            android:text="Nome" />
+
+        <EditText
+            android:id="@+id/nome_colaborador"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="nome"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="16dp" />
 
-        <AutoCompleteTextView
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email" />
+
+        <EditText
             android:id="@+id/login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Login"
+            android:hint="email"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="16dp" />
-        <AutoCompleteTextView
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Senha" />
+
+        <EditText
             android:id="@+id/senha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="senha"
             android:inputType="textPassword"
-            android:hint="Senha"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="16dp" />
-        <AutoCompleteTextView
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirme Senha" />
+
+        <EditText
             android:id="@+id/senha2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="confirme a senha"
             android:inputType="textPassword"
-            android:hint="Confirme a senha"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="16dp" />
         <Button
@@ -60,6 +86,7 @@
             android:layout_marginTop="16dp"
             android:text="Cadastrar"
             android:textStyle="bold" />
+
     </LinearLayout>
 
 
