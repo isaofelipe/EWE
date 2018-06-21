@@ -46,6 +46,7 @@ public class ColaboradorActivity extends AppCompatActivity
     private String localDetectado;
     private String mensagemFixaDetectada;
     private String mensagemTemporariaDetectada;
+    private FloatingActionButton botao_colaborar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,9 @@ public class ColaboradorActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton botao_colaborar = findViewById(R.id.fab);
+        botao_colaborar = findViewById(R.id.fab);
+        botao_colaborar.setEnabled(false);
+        botao_colaborar.setAlpha(0.5f);
         botao_colaborar.setOnClickListener(new ImageButton.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -92,6 +95,12 @@ public class ColaboradorActivity extends AppCompatActivity
         mBeaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout(BeaconParser.EDDYSTONE_UID_LAYOUT));
         mBeaconManager.bind(this);
+    }
+
+    @Override
+    protected void onResume() {
+        ultimoBeacon = "";
+        super.onResume();
     }
 
     @Override
@@ -181,7 +190,7 @@ public class ColaboradorActivity extends AppCompatActivity
                 Beacons beaconDetectado = AppDataBase.getDatabase(this).beaconDAO().findByInstance(instance.toString());
                 if (beaconDetectado != null){
                     ultimoBeacon = beaconDetectado.getInstance();
-                    identificacaoDetectada = Integer.toString(beaconDetectado.getId());
+                    identificacaoDetectada = beaconDetectado.getInstance();
                     localDetectado = beaconDetectado.getLocal();
                     mensagemFixaDetectada = beaconDetectado.getMensagemFixa();
                     mensagemTemporariaDetectada = beaconDetectado.getMensagemTemporaria();
@@ -192,6 +201,8 @@ public class ColaboradorActivity extends AppCompatActivity
                             localTextView.setText(localDetectado);
                             mensagemFixaTextView.setText(mensagemFixaDetectada);
                             mensagemTemporariaTextView.setText(mensagemTemporariaDetectada);
+                            botao_colaborar.setEnabled(true);
+                            botao_colaborar.setAlpha(1f);
                         }
                     });
                 }

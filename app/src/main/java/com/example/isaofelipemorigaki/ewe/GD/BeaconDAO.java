@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -23,4 +24,7 @@ public interface BeaconDAO {
 
     @Delete
     void delete(Beacons user);
+
+    @Update
+    void update(Beacons beacon);
 }

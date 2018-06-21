@@ -44,8 +44,10 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
         if (sp.getBoolean("logado", false)){
-            startActivity(new Intent(RangingActivity.this, ColaboradorActivity.class));
+            Intent intent = new Intent(RangingActivity.this, ColaboradorActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK  | Intent.FLAG_ACTIVITY_CLEAR_TASK );
             finish();
+            startActivity(intent);
         }
 
         super.onCreate(savedInstanceState);

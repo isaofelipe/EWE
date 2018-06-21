@@ -340,13 +340,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 sp.edit().putString("login", mlogin).apply();
                 sp.edit().putString("nome", mnome).apply();
                 Intent intent = new Intent(LoginActivity.this, ColaboradorActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(intent);
-
-                //startActivity(new Intent(LoginActivity.this, ColaboradorActivity.class));
-                /*RangingActivity.h.sendEmptyMessage(0);*/
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK  | Intent.FLAG_ACTIVITY_CLEAR_TASK );
                 finish();
+                startActivity(intent);
             } else {
                 SenhaView.setError(getString(R.string.error_incorrect_password));
                 SenhaView.requestFocus();
