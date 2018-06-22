@@ -142,7 +142,7 @@ public class ColaboradorActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_historico) {
-            // Abrir histórico
+            startActivity(new Intent(ColaboradorActivity.this, HistoricoActivity.class));
         } else if (id == R.id.nav_sair) {
             SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
             sp.edit().putBoolean("logado", false).apply();
