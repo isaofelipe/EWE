@@ -95,8 +95,8 @@ public class ColaboradorActivity extends AppCompatActivity
         mBeaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout(BeaconParser.EDDYSTONE_UID_LAYOUT));
         mBeaconManager.bind(this);
-    }
 
+    }
     @Override
     protected void onResume() {
         ultimoBeacon = "";
@@ -128,8 +128,8 @@ public class ColaboradorActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_about) {
+                startActivity(new Intent(ColaboradorActivity.this, AboutAcitivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -153,6 +153,8 @@ public class ColaboradorActivity extends AppCompatActivity
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
+        } else if (id == R.id.nav_perfil) {
+            startActivity(new Intent(ColaboradorActivity.this, PerfilActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

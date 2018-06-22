@@ -4,16 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/branco"
-    tools:context="com.example.isaofelipemorigaki.ewe.RangingActivity">
+    tools:context=".AboutAcitivity">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:background="@color/branco">
+
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="258dp"
@@ -21,30 +17,26 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="129dp"
-        android:contentDescription="fundo_principal"
-        app:srcCompat="@drawable/imagem_inicio_laranja"
+        android:contentDescription="fundo-sobre"
+        app:srcCompat="@mipmap/logo"
         tools:background="@color/branco" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView2"
+        android:layout_centerHorizontal="true"
+        android:text="EWE, 2018."
+        android:textColor="@color/preto" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView2"
-        android:layout_centerHorizontal="true"
-        android:text="O seu dispositivo está em modo navegação. "
-        android:textColor="@color/preto" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="21dp"
-        android:textColor="@color/preto"
-        android:text="EWE, 2018." />
+        android:layout_marginBottom="216dp"
+        android:text="Solution for intelligent environments."
+        android:textColor="@color/preto" />
 
-        </LinearLayout>
-    </RelativeLayout>
+</RelativeLayout>
 </android.support.constraint.ConstraintLayout>
-

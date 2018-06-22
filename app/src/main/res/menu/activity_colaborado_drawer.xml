@@ -2,7 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_perfil"
+            android:icon="@drawable/perfil_icon"
+            android:title="Meu Perfil" />
+    </group>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_historico"
