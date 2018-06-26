@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "523228861956",
+    "firebase_url": "https://ewefirebaseproject.firebaseio.com",
+    "project_id": "ewefirebaseproject",
+    "storage_bucket": "ewefirebaseproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:523228861956:android:783ed73b16ceb063",
+        "android_client_info": {
+          "package_name": "com.example.isaofelipemorigaki.ewe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "523228861956-fgg0fs5et3fumfo5caivn0t5c6jfai66.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.isaofelipemorigaki.ewe",
+            "certificate_hash": "0258f99a4cfa656d5be6a51ab22f91f9750d1e00"
+          }
+        },
+        {
+          "client_id": "523228861956-ar9akiseqri0m7tpfdi7buuofb6t2qia.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "523228861956-ar9akiseqri0m7tpfdi7buuofb6t2qia.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBc2b7xpoXzYsnsxvKDv5riimDdzXjgNy0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "523228861956-ar9akiseqri0m7tpfdi7buuofb6t2qia.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
