@@ -16,9 +16,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
-import com.example.isaofelipemorigaki.ewe.GD.Beacons;
+import com.example.isaofelipemorigaki.ewe.firebase.Beacons;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -31,6 +36,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class ColaboradorActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, BeaconConsumer, RangeNotifier {
@@ -47,6 +53,9 @@ public class ColaboradorActivity extends AppCompatActivity
     private String mensagemFixaDetectada;
     private String mensagemTemporariaDetectada;
     private FloatingActionButton botao_colaborar;
+    private List<Beacons> listaBeaconsColab = new ArrayList<>();
+    private DatabaseReference dbBeacons;
+    private ValueEventListener bListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +105,31 @@ public class ColaboradorActivity extends AppCompatActivity
                 setBeaconLayout(BeaconParser.EDDYSTONE_UID_LAYOUT));
         mBeaconManager.bind(this);
 
+        dbBeacons = FirebaseDatabase.getInstance().getReference("beacons");
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listaBeaconsColab = new ArrayList<>();
+                for(DataSnapshot entry : (Iterable<DataSnapshot>) dataSnapshot.getChildren()){
+                    listaBeaconsColab.add(entry.getValue(Beacons.class));
+                }
+                ultimoBeacon = "";
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "Erro Firebase", Toast.LENGTH_SHORT).show();
+            }
+        };
+        dbBeacons.addValueEventListener(listener);
+        bListener = listener;
+    }
+
     @Override
     protected void onResume() {
         ultimoBeacon = "";
@@ -189,7 +222,10 @@ public class ColaboradorActivity extends AppCompatActivity
             double distancia = beacon.getDistance();
 
             if (!instance.toString().equals(ultimoBeacon) && distancia <= ((Config)this.getApplication()).getMinRange()){
-                Beacons beaconDetectado = AppDataBase.getDatabase(this).beaconDAO().findByInstance(instance.toString());
+                int indexBeacon = listaBeaconsColab.lastIndexOf(new Beacons(instance.toString()));
+                Beacons beaconDetectado = null;
+                if (indexBeacon >= 0)
+                    beaconDetectado = listaBeaconsColab.get(indexBeacon);
                 if (beaconDetectado != null){
                     ultimoBeacon = beaconDetectado.getInstance();
                     identificacaoDetectada = beaconDetectado.getInstance();
@@ -209,6 +245,14 @@ public class ColaboradorActivity extends AppCompatActivity
                     });
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(bListener != null){
+            dbBeacons.removeEventListener(bListener);
         }
     }
 }

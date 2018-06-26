@@ -1,28 +1,19 @@
-package com.example.isaofelipemorigaki.ewe.GD;
+package com.example.isaofelipemorigaki.ewe.firebase;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-
-@Entity
 public class Colaboradores {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    private String id;
 
-    @ColumnInfo(name = "nome")
     private String nome;
 
-    @ColumnInfo(name = "login")
     private String login;
 
-    @ColumnInfo(name = "senha")
     private String senha;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -54,5 +45,8 @@ public class Colaboradores {
         this.nome = nome;
         this.login = login;
         this.senha = senha;
+    }
+
+    public Colaboradores() {
     }
 }

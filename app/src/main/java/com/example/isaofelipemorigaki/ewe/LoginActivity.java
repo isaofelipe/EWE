@@ -15,7 +15,6 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -31,9 +30,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
-import com.example.isaofelipemorigaki.ewe.GD.Colaboradores;
+import com.google.common.collect.Iterables;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +65,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    //private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView loginView;
@@ -158,9 +163,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
+        /*if (mAuthTask != null) {
             return;
-        }
+        }*/
 
         // Reset errors.
         loginView.setError(null);
@@ -168,7 +173,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Store values at the time of the login attempt.
         String login = loginView.getText().toString();
-        String senha = SenhaView.getText().toString();
+        final String senha = SenhaView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -199,19 +204,49 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(login, senha);
-            mAuthTask.execute((Void) null);
+
+            DatabaseReference dbColaboradores = FirebaseDatabase.getInstance().getReference("colaboradores");
+            Query query = dbColaboradores.orderByChild("login").equalTo(login);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        com.example.isaofelipemorigaki.ewe.firebase.Colaboradores colaborador = Iterables.get(dataSnapshot.getChildren(), 0).getValue(com.example.isaofelipemorigaki.ewe.firebase.Colaboradores.class);
+                        if (senha.equals(colaborador.getSenha())){
+                            SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
+                            sp.edit().putBoolean("logado", true).apply();
+                            sp.edit().putString("login", colaborador.getLogin()).apply();
+                            sp.edit().putString("nome", colaborador.getNome()).apply();
+                            sp.edit().putString("id", colaborador.getId()).apply();
+                            Intent intent = new Intent(LoginActivity.this, ColaboradorActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK  | Intent.FLAG_ACTIVITY_CLEAR_TASK );
+                            finish();
+                            startActivity(intent);
+                        } else {
+                            SenhaView.setError(getString(R.string.error_incorrect_password));
+                            SenhaView.requestFocus();
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(getApplicationContext(), "Erro Firebase", Toast.LENGTH_SHORT).show();
+                }
+            });
+            /*mAuthTask = new UserLoginTask(login, senha);
+            mAuthTask.execute((Void) null);*/
         }
     }
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return true;//email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 3;
     }
 
     /**
@@ -302,58 +337,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mlogin;
-        private final String mSenha;
-        private String mnome;
-
-        UserLoginTask(String login, String senha) {
-            mlogin = login;
-            mSenha = senha;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            Colaboradores colaborador = AppDataBase.getDatabase(getApplicationContext()).colaboradorDAO().findByInstance(mlogin);
-            if (colaborador != null){
-                mnome = colaborador.getNome();
-                return colaborador.getSenha().equals(mSenha);
-            }
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
-                sp.edit().putBoolean("logado", true).apply();
-                sp.edit().putString("login", mlogin).apply();
-                sp.edit().putString("nome", mnome).apply();
-                Intent intent = new Intent(LoginActivity.this, ColaboradorActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK  | Intent.FLAG_ACTIVITY_CLEAR_TASK );
-                finish();
-                startActivity(intent);
-            } else {
-                SenhaView.setError(getString(R.string.error_incorrect_password));
-                SenhaView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
     }
 }
 

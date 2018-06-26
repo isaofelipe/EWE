@@ -1,9 +1,7 @@
 package com.example.isaofelipemorigaki.ewe;
 
-import android.arch.persistence.room.Room;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,21 +10,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
-import com.example.isaofelipemorigaki.ewe.GD.Beacons;
-import com.example.isaofelipemorigaki.ewe.GD.Colaboradores;
-
-import org.altbeacon.beacon.Beacon;
-import org.altbeacon.beacon.BeaconConsumer;
-import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.BeaconParser;
-import org.altbeacon.beacon.Identifier;
-import org.altbeacon.beacon.RangeNotifier;
-import org.altbeacon.beacon.Region;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.example.isaofelipemorigaki.ewe.firebase.Beacons;
+import com.example.isaofelipemorigaki.ewe.firebase.Contribuicao;
+import com.google.common.collect.Iterables;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class ContribuirActivity extends AppCompatActivity {
     private AutoCompleteTextView identificacaoDispositivoView;
@@ -34,7 +26,10 @@ public class ContribuirActivity extends AppCompatActivity {
     private EditText mensagemFixaView;
     private EditText mensagemTemporariaView;
     private Button botao_contribuir;
-    AppDataBase appDataBase;
+    String bInstance;
+    String bLocal;
+    String bMensagemFixa;
+    String bMensagemTemporaria;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +50,6 @@ public class ContribuirActivity extends AppCompatActivity {
         botao_contribuir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                appDataBase = Room.databaseBuilder(getApplicationContext(),
-                        AppDataBase.class, "app_database").build();
                 new ContribuirActivity.DatabaseAsync().execute();
             }
         });
@@ -66,11 +59,41 @@ public class ContribuirActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            Beacons beacon = appDataBase.beaconDAO().findByInstance(identificacaoDispositivoView.getText().toString());
-            beacon.setLocal(localDispositivoView.getText().toString());
-            beacon.setMensagemFixa(mensagemFixaView.getText().toString());
-            beacon.setMensagemTemporaria(mensagemTemporariaView.getText().toString());
-            appDataBase.beaconDAO().update(beacon);
+            bInstance = identificacaoDispositivoView.getText().toString();
+            bLocal = localDispositivoView.getText().toString();
+            bMensagemFixa = mensagemFixaView.getText().toString();
+            bMensagemTemporaria = mensagemTemporariaView.getText().toString();
+
+            DatabaseReference dbCBeacons = FirebaseDatabase.getInstance().getReference("beacons");
+            Query query = dbCBeacons.orderByChild("instance").equalTo(bInstance);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        Beacons beacon = Iterables.get(dataSnapshot.getChildren(), 0).getValue(Beacons.class);
+                        beacon.setLocal(bLocal);
+                        beacon.setMensagemFixa(bMensagemFixa);
+                        beacon.setMensagemTemporaria(bMensagemTemporaria);
+                        DatabaseReference dbBeacons = FirebaseDatabase.getInstance().getReference("beacons");
+                        dbBeacons.child(String.valueOf(beacon.getId())).setValue(beacon);
+
+                        adicionarHistorico(beacon);
+                    }
+                }
+
+                private void adicionarHistorico(Beacons beacon) {
+                    DatabaseReference dbContribuicao = FirebaseDatabase.getInstance().getReference("contribuicao");
+                    SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
+                    Contribuicao contribuicao = new Contribuicao(dbContribuicao.push().getKey(), beacon.getNamespace(),
+                            beacon.getInstance(), beacon.getLocal(), beacon.getMensagemFixa(), beacon.getMensagemTemporaria(), beacon.getId(), sp.getString("id", ""));
+                    dbContribuicao.child(contribuicao.getId()).setValue(contribuicao);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(getApplicationContext(), "Erro Firebase", Toast.LENGTH_SHORT).show();
+                }
+            });
             return null;
         }
 

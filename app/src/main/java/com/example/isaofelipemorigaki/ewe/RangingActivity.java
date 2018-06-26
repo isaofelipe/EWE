@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.RemoteException;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
@@ -15,10 +14,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toolbar;
+import android.widget.Toast;
 
-import com.example.isaofelipemorigaki.ewe.GD.AppDataBase;
-import com.example.isaofelipemorigaki.ewe.GD.Beacons;
+import com.example.isaofelipemorigaki.ewe.firebase.Beacons;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -30,6 +33,7 @@ import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 public class RangingActivity extends AppCompatActivity implements BeaconConsumer, RangeNotifier, TextToSpeech.OnInitListener {
@@ -39,9 +43,17 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     static public final Locale BRAZIL = new Locale("pt_BR_", "pt", "BR");
     private String ultimoBeacon;
     public static Handler h;
+    private List<Beacons> listaBeacons = new ArrayList<>();
+    private DatabaseReference dbBeacons;
+    private ValueEventListener bListener;
+
+    ArrayList<Identifier> identifiers = new ArrayList<>();
+
+    Region region;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         SharedPreferences sp = getSharedPreferences("login", MODE_PRIVATE);
         if (sp.getBoolean("logado", false)){
             Intent intent = new Intent(RangingActivity.this, ColaboradorActivity.class);
@@ -49,18 +61,21 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
             finish();
             startActivity(intent);
         }
+        else{
+            setContentView(R.layout.activity_ranging);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ranging);
+            identifiers.add(null);
+            region = new Region("AllBeaconsRegion", identifiers);
+            mBeaconManager = BeaconManager.getInstanceForApplication(this);
+            mBeaconManager.getBeaconParsers().add(new BeaconParser().
+                    setBeaconLayout(BeaconParser.EDDYSTONE_UID_LAYOUT));
+            mBeaconManager.bind(this);
+            checkLocationPermission();
 
+            tts = new TextToSpeech(this, this);
 
-        mBeaconManager = BeaconManager.getInstanceForApplication(this);
-        mBeaconManager.getBeaconParsers().add(new BeaconParser().
-                setBeaconLayout(BeaconParser.EDDYSTONE_UID_LAYOUT));
-        mBeaconManager.bind(this);
-        checkLocationPermission();
-
-        tts = new TextToSpeech(this, this);
+            dbBeacons = FirebaseDatabase.getInstance().getReference("beacons");
+        }
     }
 
     @Override
@@ -79,13 +94,6 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
 
     @Override
     public void onBeaconServiceConnect() {
-        // Encapsulates a beacon identifier of arbitrary byte length
-        ArrayList<Identifier> identifiers = new ArrayList<>();
-
-        // Set null to indicate that we want to match beacons with any value
-        identifiers.add(null);
-        // Represents a criteria of fields used to match beacon
-        Region region = new Region("AllBeaconsRegion", identifiers);
         try {
             // Tells the BeaconService to start looking for beacons that match the passed Region object
             mBeaconManager.startRangingBeaconsInRegion(region);
@@ -104,7 +112,10 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
             Identifier instance = beacon.getId2();
             double distancia = beacon.getDistance();
             if (!instance.toString().equals(ultimoBeacon) && distancia <= ((Config)this.getApplication()).getMinRange()){
-                Beacons beaconDetectado = AppDataBase.getDatabase(this).beaconDAO().findByInstance(instance.toString());
+                int indexBeacon = listaBeacons.lastIndexOf(new Beacons(instance.toString()));
+                Beacons beaconDetectado = null;
+                if (indexBeacon >= 0)
+                    beaconDetectado = listaBeacons.get(indexBeacon);
                 if (beaconDetectado != null){
                     ultimoBeacon = beaconDetectado.getInstance();
                     String texto = beaconDetectado.getMensagemFixa() + " " + beaconDetectado.getMensagemTemporaria();
@@ -141,7 +152,26 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         super.onStart();
         speakOut("Modo navegação.");
         getDelegate().onStart();
+
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listaBeacons = new ArrayList<>();
+                for(DataSnapshot entry : (Iterable<DataSnapshot>) dataSnapshot.getChildren()){
+                    listaBeacons.add(entry.getValue(Beacons.class));
+                }
+                ultimoBeacon = "";
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "Erro Firebase", Toast.LENGTH_SHORT).show();
+            }
+        };
+        dbBeacons.addValueEventListener(listener);
+        bListener = listener;
     }
+
     @Override
     public void onDestroy() {
         // Don't forget to shutdown tts!
@@ -171,6 +201,21 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     @Override
     protected void onPause() {
         super.onPause();
+        try{
+            mBeaconManager.stopRangingBeaconsInRegion(region);
+        }
+        catch(RemoteException e){
+
+        }
+        mBeaconManager.removeAllRangeNotifiers();
         mBeaconManager.unbind(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(bListener != null){
+            dbBeacons.removeEventListener(bListener);
+        }
     }
 }

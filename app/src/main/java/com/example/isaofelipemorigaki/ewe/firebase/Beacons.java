@@ -1,27 +1,16 @@
-package com.example.isaofelipemorigaki.ewe.GD;
+package com.example.isaofelipemorigaki.ewe.firebase;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-
-@Entity
 public class Beacons {
-    @PrimaryKey(autoGenerate = true)
     private int id;
 
-    @ColumnInfo(name = "namespace")
     private String namespace;
 
-    @ColumnInfo(name = "instance")
     private String instance;
 
-    @ColumnInfo(name = "local")
     private String local;
 
-    @ColumnInfo(name = "mensagemFixa")
     private String mensagemFixa;
 
-    @ColumnInfo(name = "mensagemTemporaria")
     private String mensagemTemporaria;
 
     public int getId() {
@@ -75,10 +64,19 @@ public class Beacons {
     public Beacons() {
     }
 
+    public Beacons(String instance) {
+        this.instance = instance;
+    }
+
     public Beacons(String instance, String local, String mensagemFixa, String mensagemTemporaria) {
         this.instance = instance;
         this.local = local;
         this.mensagemFixa = mensagemFixa;
         this.mensagemTemporaria = mensagemTemporaria;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (this.instance.equals(((Beacons)obj).getInstance()));
     }
 }
