@@ -150,6 +150,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     @Override
     protected void onStart() {
         super.onStart();
+        ultimoBeacon = "";
         speakOut("Modo navegação.");
         getDelegate().onStart();
 
@@ -198,7 +199,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         }
     }
 
-    @Override
+    /*@Override
     protected void onPause() {
         super.onPause();
         try{
@@ -209,7 +210,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         }
         mBeaconManager.removeAllRangeNotifiers();
         mBeaconManager.unbind(this);
-    }
+    }*/
 
     @Override
     protected void onStop() {
